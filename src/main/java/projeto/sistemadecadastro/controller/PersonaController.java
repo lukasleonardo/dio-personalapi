@@ -1,12 +1,18 @@
 package projeto.sistemadecadastro.controller;
 
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import projeto.sistemadecadastro.dto.MessageResponseDTO;
+import projeto.sistemadecadastro.dto.requests.PersonDTO;
+import projeto.sistemadecadastro.dto.response.MessageResponseDTO;
 import projeto.sistemadecadastro.entity.Person;
+import projeto.sistemadecadastro.exception.PersonNotFoundException;
 import projeto.sistemadecadastro.service.PersonService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/persona")
@@ -21,7 +27,17 @@ public class PersonaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponseDTO createPersona(@RequestBody Person person) {
-        return personService.createPersona(person);
+    public MessageResponseDTO createPersona(@RequestBody @Valid PersonDTO personDTO) {
+        return personService.createPersona(personDTO);
+    }
+
+    @GetMapping
+    public List<PersonDTO> listAll(){
+       return personService.listAll();
+    }
+
+    @GetMapping("/{id}")
+    public PersonDTO findById(@PathVariable Long id)throws PersonNotFoundException {
+        return personService.findById(id);
     }
 }

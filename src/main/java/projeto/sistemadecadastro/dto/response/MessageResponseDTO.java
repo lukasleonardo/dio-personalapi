@@ -1,4 +1,4 @@
-package projeto.sistemadecadastro.dto;
+package projeto.sistemadecadastro.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
