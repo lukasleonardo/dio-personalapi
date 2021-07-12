@@ -28,10 +28,7 @@ public class PersonService {
     public MessageResponseDTO createPersona(PersonDTO personDTO){
        Person personToSave = personMapper.toModel(personDTO);
         Person savedPerson = personRepository.save(personToSave);
-        return MessageResponseDTO
-                .builder()
-                .Message("Saved person successfuly inserted to the database "+"Id: "+ savedPerson.getId() +" "+ savedPerson.getFirst_name() +" "+ savedPerson.getLast_name())
-                .build();
+        return CreateMethodResponse(savedPerson, "Person saved successfuly Id: ");
     }
 
     public List<PersonDTO> listAll() {
@@ -41,13 +38,35 @@ public class PersonService {
                 .collect(Collectors.toList());
     }
 
+    // Verifica a Existencia do id
+    public Person VerifyIfExists(Long id) throws PersonNotFoundException{
+        return personRepository.findById(id).orElseThrow(()->new PersonNotFoundException(id));
+    }
+
+    //Encontra a instância do ID
     public PersonDTO findById(Long id) throws PersonNotFoundException {
-        Optional<Person> optionalPerson = personRepository.findById(id);
-        if (optionalPerson.isEmpty()){
-            throw new PersonNotFoundException(id);
-        }
-        return personMapper.toDTO(optionalPerson.get());
+         Person person = VerifyIfExists(id);
+        return personMapper.toDTO(person);
+    }
+    //Deleta a instância do ID
+    public void deleteById(Long id) throws PersonNotFoundException {
+        VerifyIfExists(id);
+        personRepository.deleteById(id);
     }
 
 
+    public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
+        VerifyIfExists(id);
+        Person personToUpdate = personMapper.toModel(personDTO);
+        Person updatePerson = personRepository.save(personToUpdate);
+        return CreateMethodResponse(updatePerson, "person updated successfuly Id:" );
+    }
+
+
+    private MessageResponseDTO CreateMethodResponse(Person savedPerson,String s) {
+        return MessageResponseDTO
+                .builder()
+                .Message(s + savedPerson.getId() + " "+ savedPerson.getFirst_name() + " "+ savedPerson.getLast_name())
+                .build();
+    }
 }
